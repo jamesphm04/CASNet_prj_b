@@ -14,8 +14,6 @@ prettytable 3.10.0
 ## Data Preparation
 Download [MNIST-M](https://github.com/fungtion/DANN), [Physical Can Dataset](https://drive.google.com/drive/folders/19KR56Hvpdkcomvz7Y-ff3Mr0PLp9So1P)
 
-Alternatively sim-to-real can data created by CASNet can be accessed [here](https://drive.google.com/drive/folders/19KR56Hvpdkcomvz7Y-ff3Mr0PLp9So1P?usp=sharing)
-
 Create Synthetic Can Dataset by following my other github project [Synthetic_Deformation_Data_Generation](https://github.com/JoelESol/Synthetic_Deformation_Data_Generation) and paper [Visual Deformation Detection Using Soft Material Simulation for Pre-training of Condition Assessment Models](http://arxiv.org/abs/2405.14877)
 ## Folder Structure of Datasets
 ```

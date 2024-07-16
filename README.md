@@ -1,4 +1,4 @@
-# [SMC 2024] Sim-to-Real Domain Adaptation for Deformation Classification
+# [SMC 2024] Sim-to-Real Domain Adaptation for Deformation Classification.
 
 ## Requirements
 ```

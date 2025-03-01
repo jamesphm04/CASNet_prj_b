@@ -3,8 +3,8 @@ from args import get_args
 from trainer import Trainer
 
 if __name__ == '__main__':
-    opt = get_args()
-    trainer = Trainer(opt)
+    args = get_args()
+    trainer = Trainer(args)
     trainer.train()
 
 #python train.py -T clf -D M MM --ex M2MM

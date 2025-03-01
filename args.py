@@ -30,9 +30,9 @@ def get_args():
     parser.add_argument('--CADT', type=bool, default=True)
     parser.add_argument('--resume_checkpoint', type=bool, default=False, help="Set true to continue training from where you left off or generate data from checkpoint else False")
     parser.add_argument('--load_step', type=int, help="iteration of trained networks")
-    parser.add_argument('--gen_data', type=bool, help="sets networks to eval mode for generating data")
-    parser.add_argument('--save_step', type=int, help="the step where images start being saved")
-    parser.add_argument('--num_imgs', type=int, help="number of generated images saved")
+    parser.add_argument('--gen_data', default=True, type=bool, help="sets networks to eval mode for generating data")
+    parser.add_argument('--save_step', default=1, type=int, help="the step where images start being saved")
+    parser.add_argument('--num_imgs', default=2500, type=int, help="number of generated images saved")
 
     ## Optimizers Parameters ##
     parser.add_argument('--lr_cas', type=float, default=0.001)

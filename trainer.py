@@ -397,13 +397,13 @@ class Trainer:
                     imgs[dset], labels[dset] = imgs[dset][:min_batch], labels[dset][:min_batch]
             # training
             for u in range(1):
-                self.train_dis(imgs)
+                self.train_dis(imgs) # Train Discriminator(D)
             for t in range(2):
-                self.train_esg(imgs)
+                self.train_esg(imgs) # Train Encoder(E), Separator(S), Generator(G)
 
-            # tensorboard
-            if self.step % self.args.tensor_freq == 0:
-                self.tensor_board_log(imgs, labels)
+            # # tensorboard
+            # if self.step % self.args.tensor_freq == 0:
+            #     self.tensor_board_log(imgs, labels)
 
             # Save images
             if self.args.gen_data:

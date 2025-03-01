@@ -19,7 +19,14 @@ def loss_weights(dsets):
         alpha['dis']['SC'], alpha['dis']['PC'] = 1, 1 #1, 1
         alpha['gradient_penalty']['SC'], alpha['gradient_penalty']['PC'] = 0.5, 0.5 #0.5,0.5
         alpha['gen']['SC'], alpha['gen']['PC'] = 1, 1 #1, 1
-
+        
+    # Synthetic Craters <-> Real Craters
+    if 'SC' in dsets and 'RC' in dsets and 'U' not in dsets:
+        alpha['style']['SC2RC'], alpha['style']['RC2SC'] = 4e4, 4e4
+        alpha['dis']['SC'], alpha['dis']['RC'] = 1, 1
+        alpha['gradient_penalty']['SC'], alpha['gradient_penalty']['RC'] = 0.5, 0.5
+        alpha['gen']['SC'], alpha['gen']['RC'] = 1, 1
+        
     # MNIST <-> MNIST-M
     if 'M' in dsets and 'MM' in dsets and 'U' not in dsets:
         alpha['style']['M2MM'], alpha['style']['MM2M'] = 5e4, 1e4#1, 0.2#5e4, 1e4

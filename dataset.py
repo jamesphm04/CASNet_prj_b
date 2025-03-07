@@ -3,7 +3,7 @@ import torch.utils.data
 import torchvision.datasets as dset
 import torchvision.transforms as trans
 import random 
-from cjm_torchvision_tfms.core import ResizeMax, PadSquare, CustomRandomIoUCrop
+# from cjm_torchvision_tfms.core import ResizeMax, PadSquare, CustomRandomIoUCrop
 
 ## Import Data Loaders ##
 from dataloader import *
@@ -29,8 +29,8 @@ def get_synthetic_craters_ds_info():
     random.shuffle(img_keys)
 
     # Define the percentage of the images that should be used for training
-    train_pct = 0.8
-    val_pct = 0.2
+    train_pct = 0.9
+    val_pct = 0.1
 
     # Calculate the index at which to split the subset of image paths into training and validation sets
     train_split = int(len(img_keys)*train_pct)
@@ -42,56 +42,56 @@ def get_synthetic_craters_ds_info():
     
     return train_keys, val_keys, images_ellipses_dir, img_dict
 
-def get_synthetic_craters_ds_transform():
-    train_sz = 1024
+# def get_synthetic_craters_ds_transform():
+#     train_sz = 1024
 
-    # Create a RandomIoUCrop object
-    iou_crop = CustomRandomIoUCrop(min_scale=0.3, 
-                                max_scale=1.0, 
-                                min_aspect_ratio=0.5, 
-                                max_aspect_ratio=2.0, 
-                                sampler_options=[0.0, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0],
-                                trials=400, 
-                                jitter_factor=0.25)
+#     # Create a RandomIoUCrop object
+#     iou_crop = CustomRandomIoUCrop(min_scale=0.3, 
+#                                 max_scale=1.0, 
+#                                 min_aspect_ratio=0.5, 
+#                                 max_aspect_ratio=2.0, 
+#                                 sampler_options=[0.0, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0],
+#                                 trials=400, 
+#                                 jitter_factor=0.25)
 
         
-    # Compose transforms for data augmentation
-    data_aug_tfms = transforms.Compose([
-        iou_crop,
-        transforms.ColorJitter(
-                brightness = (0.875, 1.125),
-                contrast = (0.5, 1.5),
-                saturation = (0.5, 1.5),
-                hue = (-0.05, 0.05),
-        ),
-        transforms.RandomGrayscale(),
-        transforms.RandomEqualize(),
-        transforms.RandomPosterize(bits=3, p=0.5),
-        transforms.RandomHorizontalFlip(p=0.5),
-        ],
-    )
+#     # Compose transforms for data augmentation
+#     data_aug_tfms = transforms.Compose([
+#         iou_crop,
+#         transforms.ColorJitter(
+#                 brightness = (0.875, 1.125),
+#                 contrast = (0.5, 1.5),
+#                 saturation = (0.5, 1.5),
+#                 hue = (-0.05, 0.05),
+#         ),
+#         transforms.RandomGrayscale(),
+#         transforms.RandomEqualize(),
+#         transforms.RandomPosterize(bits=3, p=0.5),
+#         transforms.RandomHorizontalFlip(p=0.5),
+#         ],
+#     )
 
-    # Compose transforms to resize and pad input images
-    resize_pad_tfm = transforms.Compose([
-        transforms.Resize([train_sz] * 2, antialias=True)
-    ])
+#     # Compose transforms to resize and pad input images
+#     resize_pad_tfm = transforms.Compose([
+#         transforms.Resize([train_sz] * 2, antialias=True)
+#     ])
 
-    # Compose transforms to sanitize bounding boxes and normalize input data
-    final_tfms = transforms.Compose([
-        transforms.ToImage(), 
-        transforms.ToDtype(torch.float32, scale=True),
-        transforms.SanitizeBoundingBoxes(),
-    ])
+#     # Compose transforms to sanitize bounding boxes and normalize input data
+#     final_tfms = transforms.Compose([
+#         transforms.ToImage(), 
+#         transforms.ToDtype(torch.float32, scale=True),
+#         transforms.SanitizeBoundingBoxes(),
+#     ])
 
-    # Define the transformations for training and validation datasets
-    train_tfms = transforms.Compose([
-        data_aug_tfms, 
-        resize_pad_tfm, 
-        final_tfms
-    ])
-    valid_tfms = transforms.Compose([resize_pad_tfm, final_tfms])
+#     # Define the transformations for training and validation datasets
+#     train_tfms = transforms.Compose([
+#         data_aug_tfms, 
+#         resize_pad_tfm, 
+#         final_tfms
+#     ])
+#     valid_tfms = transforms.Compose([resize_pad_tfm, final_tfms])
     
-    return train_tfms, valid_tfms
+#     return train_tfms, valid_tfms
 
 def get_dataset(dataset, batch, imsize, workers):
 

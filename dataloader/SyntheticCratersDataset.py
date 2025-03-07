@@ -30,7 +30,7 @@ class SyntheticCratersDataset(Dataset):
         annot_file_path = os.path.join(self._anno_ellipses_dir, annot_filename)
 
         # Load the image and its target (segmentation masks, bounding boxes and labels)
-        image, target = self._load_image_and_target(img_path, annot_file_path)        
+        image, target = self._load_image_and_target(img_path, annot_file_path, index)        
         
         if self._transforms:
             image = self._transforms(image)
@@ -56,7 +56,7 @@ class SyntheticCratersDataset(Dataset):
         ymax = np.max(pos[0])
         return [xmin, ymin, xmax, ymax]
 
-    def _load_image_and_target(self, img_path, annot_file_path):
+    def _load_image_and_target(self, img_path, annot_file_path, index):
         image = Image.open(img_path).convert('RGB')
         
         target = {
@@ -84,4 +84,4 @@ class SyntheticCratersDataset(Dataset):
         bboxes = BoundingBoxes(data=torchvision.ops.masks_to_boxes(masks), format='xyxy', canvas_size=image.size[::-1])
 
         # return image, {'masks': masks,'boxes': bboxes, 'labels': labels_tensor}
-        return image, labels_tensor[0]
+        return image, index

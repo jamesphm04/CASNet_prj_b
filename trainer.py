@@ -274,6 +274,9 @@ class Trainer:
             if not os.path.exists(convert_dir):
                 os.makedirs(convert_dir)  # Create the directory if it doesn't exist
             num_images = len([name for name in os.listdir(convert_dir) if name.endswith('.png')])
+            
+            self.logger.info(f"Number of images generated: {num_images}/{threshold}")
+            
             if num_images < threshold:
                 self.save_images(imgs, labels)
             else:
@@ -319,10 +322,14 @@ class Trainer:
                     index = int(filename.split('_')[0])
                     max_index = max(max_index, index)
             # Save each converted image with an increasing index
+            
+            img_path = None
             for i, img_tensor in enumerate(converted_imgs[convert]):
                 img_filename = f"{max_index + i + 1}_class_{labels[source][i]}.png"
                 img_path = os.path.join(convert_dir, img_filename)
                 vutils.save_image(img_tensor, img_path, normalize=True, scale_each=True)
+            
+                
         for convert in converts:
             x = vutils.make_grid(converted_imgs[convert].detach(), normalize=True, scale_each=True, nrow=8)
             img_filename = f"{convert}_converted_images.png"
@@ -372,7 +379,7 @@ class Trainer:
     def train(self):
         self.set_default()
         self.set_networks()
-        if self.args.resume_checkpoint:
+        if self.args.resume_checkpoint: # loading pretrained networks
             self.load_networks(self.args.load_step)
             self.step = self.args.load_step
         self.set_optimizers()

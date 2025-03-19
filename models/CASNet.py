@@ -1,15 +1,14 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torchvision import models
-import numpy as np
-from torch.autograd import Variable
 from torch.nn.utils import spectral_norm
 from .batchinstancenorm import BatchInstanceNorm2d as Normlayer
 import functools
-from functools import partial
-import torchvision.transforms as ttransforms
 
+from torchvision import transforms
+from PIL import Image
+from models.cadt import cadt
+import matplotlib.pyplot as plt
 
 class ResidualBlock(nn.Module):
     def __init__(self, in_channels, filters=64, kernel_size=3, stride=1, padding=1):
@@ -53,7 +52,6 @@ class Encoder(nn.Module):
     def forward(self, x):
         output = self.model(x)
         return output
-
 
 class Separator(nn.Module):
     def __init__(self, imsize, converts, ch=64, down_scale=2):
@@ -101,8 +99,10 @@ class Generator(nn.Module):
         )
 
     def forward(self, content, style):
-        return self.model(content+style)
-
+        output = self.model(content + style)    
+        
+        return output
+        
 
 #MNIST Classifier
 class Classifier(nn.Module):
@@ -137,7 +137,7 @@ class Classifier(nn.Module):
 class VGG19(nn.Module):
     def __init__(self):
         super(VGG19, self).__init__()
-        features = models.vgg19(pretrained=True).features
+        features = models.vgg19(weights='IMAGENET1K_V1').features
         self.to_relu_1_1 = nn.Sequential()
         self.to_relu_2_1 = nn.Sequential()
         self.to_relu_3_1 = nn.Sequential()
@@ -276,3 +276,66 @@ class VGG16_classifier(nn.Module):
         for name, param in self.named_parameters():
             if 'classifier' not in name and 'features.30' not in name:
                 param.requires_grad = False
+                
+                
+class Converter:
+    def __init__(self, step, img_size):
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
+        self.img_size = img_size
+        
+        self.nets = {
+            'E': Encoder(),
+            'G': Generator(),
+            'S': Separator((img_size, img_size), ['SC2RC', 'RC2SC']),
+        }
+        
+        for net in self.nets.keys():
+            self.nets[net].load_state_dict(torch.load(f'/home/james/MyFolder/code/GIT/CASNet_prj_b/checkpoint/SC2RC/{step}/net{net}.pth'))
+            self.nets[net].to(self.device)
+            self.nets[net].eval()
+    
+    def load_image(self, abs_img_path):
+        transform = transforms.Compose([
+            transforms.Resize((self.img_size, self.img_size)),
+            transforms.ToTensor(),
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+        ])
+        img = Image.open(abs_img_path).convert('RGB')
+        img = transform(img).unsqueeze(0).to(self.device) # Add batch dimension and move to same device as model
+        return img
+    
+    def convert(self, abs_img_path, CADT=True):
+        # Load and preprocess the image
+        input_image = self.load_image(abs_img_path).cuda()  # Move to GPU if available
+
+        converts = ['SC2RC', 'RC2SC']
+        features = { 'SC': None, 'RC': None }
+        
+        converted_imgs = {}
+        
+        # Perform inference (pass through Encoder and Generator)
+        with torch.no_grad():  # No need to track gradients during inference
+            
+            for dset in list(features.keys()):
+                features[dset] = self.nets['E'](input_image)
+                
+            contents, styles = self.nets['S'](features, converts)
+                
+            for convert in converts:
+                source, target = convert.split('2')
+                
+                if CADT: 
+                    _, styles[target] = cadt(contents[source], contents[target], styles[target])
+                    
+                converted_imgs[convert] = self.nets['G'](contents[convert], styles[target])
+                
+        # convert to PIL
+        
+        for key in converted_imgs.keys():
+            converted_imgs[key] = converted_imgs[key].cpu().squeeze(0)
+            converted_imgs[key] = (converted_imgs[key] + 1) / 2
+            converted_imgs[key] = transforms.ToPILImage()(converted_imgs[key])  
+            
+        return converted_imgs      
+                
+        

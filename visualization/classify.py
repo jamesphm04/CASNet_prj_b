@@ -8,7 +8,8 @@ from torch.utils.data import ConcatDataset
 import models.CASNet as model
 from sklearn.metrics import confusion_matrix
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = 'cpu'
 print(f"Using device: {device}")
 
 imsize = 512
@@ -54,7 +55,7 @@ test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 # Initialize the model, loss function, and optimizer
 net = model.VGG16()
-net.cuda()
+# net.cuda()
 net.freeze_layers()
 
 criterion = nn.BCELoss()

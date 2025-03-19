@@ -1,6 +1,7 @@
 # [SMC 2024] Sim-to-Real Domain Adaptation for Deformation Classification.[Link to paper](https://arxiv.org/abs/2407.10011)
 
 ## Requirements
+
 ```
 torch 2.3.1
 numpy 1.26.3
@@ -11,11 +12,15 @@ scikit-learn 1.5.0
 tensorboardX 2.6.2.2
 prettytable 3.10.0
 ```
+
 ## Data Preparation
+
 Download [MNIST-M](https://github.com/fungtion/DANN), [Physical Can Dataset](https://drive.google.com/drive/folders/19KR56Hvpdkcomvz7Y-ff3Mr0PLp9So1P)
 
 Create Synthetic Can Dataset by following my other github project [Synthetic_Deformation_Data_Generation](https://github.com/JoelESol/Synthetic_Deformation_Data_Generation) and paper [Visual Deformation Detection Using Soft Material Simulation for Pre-training of Condition Assessment Models](http://arxiv.org/abs/2405.14877)
+
 ## Folder Structure of Datasets
+
 ```
 ├── data
       ├── MNIST
@@ -44,15 +49,25 @@ Create Synthetic Can Dataset by following my other github project [Synthetic_Def
             ├── PC2SC_converted_images.png
             ├── SC2PC_converted_images.png
 ```
+
 ## Train
+
 Here are some example commands see args.py for more details
+
 ```
 python train.py -D SC PC --imsize 256 --eval_freq 100 --tensor_freq 50 --ex SC2PC
 python train.py -D SC PC --imsize 256 --resume_checkpoint True --load_step 1000 --eval_freq 100 --tensor_freq 50 --ex SC2PC
 python train.py -D SC PC --imsize 256 --resume_checkpoint True --load_step 1000 --gen_data True --ex SC2PC
 ```
+
 ## Tensorboard
+
 You can see all the results of each experiment on tensorboard.
+
 ```
 tensorboard --logdir tensorboard --bind_all
 ```
+
+## my cmd
+
+python train.py -D SC RC --imsize 256 --tensor_freq 50 --ex SC2RC --resume_checkpoint True --load_step 1000

@@ -144,7 +144,8 @@ class Loss_Functions:
             for p1, p2 in zip(perceptual[target][:-1], perceptual_converted[cv][:-1]):
                 s = p1.shape
                 if s[0] > 1:
-                    proj = torch.randn(s[2], projection_dimension, device="cuda:0")
+                    # proj = torch.randn(s[2], projection_dimension, device="cuda:0")
+                    proj = torch.randn(s[2], projection_dimension, device="cpu")
                     proj *= torch.rsqrt(torch.sum(torch.mul(proj, proj), 0, keepdim=True))
                     p1 = torch.matmul(p1, proj)
                     p2 = torch.matmul(p2, proj)

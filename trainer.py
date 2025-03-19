@@ -62,6 +62,9 @@ class Trainer:
         self.logger = getLogger()
         self.checkpoint = './checkpoint/%s' % (args.ex)
         self.step = 0
+        
+        self.device = 'cpu'
+        # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def set_default(self):
         torch.backends.cudnn.benchmark = True
@@ -70,7 +73,7 @@ class Trainer:
         print("Random Seed: ", self.args.manualSeed)
         seed(self.args.manualSeed)
         torch.manual_seed(self.args.manualSeed)
-        torch.cuda.manual_seed_all(self.args.manualSeed)
+        # torch.cuda.manual_seed_all(self.args.manualSeed)
 
         ## Logger ##
         file_log_handler = FileHandler(self.args.logfile)
@@ -126,12 +129,12 @@ class Trainer:
                 init_params(self.nets[net])
         self.nets['P'] = VGG19()
 
-        for net in self.nets.keys():
-            if net == 'D':
-                for dset in self.args.datasets:
-                    self.nets[net][dset].cuda()
-            else:
-                self.nets[net].cuda()
+        # for net in self.nets.keys():
+        #     if net == 'D':
+        #         for dset in self.args.datasets:
+        #             self.nets[net][dset].cuda() 
+        #     else:
+        #         self.nets[net].cuda()
 
     def set_optimizers(self):
         self.optims['E'] = optim.Adam(self.nets['E'].parameters(), lr=self.args.lr_cas,
@@ -377,7 +380,7 @@ class Trainer:
 
 
     def train(self):
-        self.set_default()
+        self.set_default() #done
         self.set_networks()
         if self.args.resume_checkpoint: # loading pretrained networks
             self.load_networks(self.args.load_step)
@@ -396,7 +399,7 @@ class Trainer:
             min_batch = self.args.batch
             for dset in self.args.datasets:
                 imgs[dset], labels[dset] = batch_data[dset]
-                imgs[dset], labels[dset] = imgs[dset].cuda(), labels[dset].cuda()
+                # imgs[dset], labels[dset] = imgs[dset].cuda(), labels[dset].cuda()
                 if imgs[dset].size(0) < min_batch:
                     min_batch = imgs[dset].size(0)
             if min_batch < self.args.batch:
@@ -408,9 +411,9 @@ class Trainer:
             for t in range(2):
                 self.train_esg(imgs) # Train Encoder(E), Separator(S), Generator(G)
 
-            # # tensorboard
-            # if self.step % self.args.tensor_freq == 0:
-            #     self.tensor_board_log(imgs, labels)
+            # tensorboard
+            if self.step % self.args.tensor_freq == 0:
+                self.tensor_board_log(imgs, labels)
 
             # Save images
             if self.args.gen_data:

@@ -29,8 +29,8 @@ def get_synthetic_craters_ds_info():
     random.shuffle(img_keys)
 
     # Define the percentage of the images that should be used for training
-    train_pct = 0.9
-    val_pct = 0.1
+    train_pct = 1
+    val_pct = 0
 
     # Calculate the index at which to split the subset of image paths into training and validation sets
     train_split = int(len(img_keys)*train_pct)
